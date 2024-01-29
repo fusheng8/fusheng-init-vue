@@ -58,7 +58,7 @@ export const useUserStore = defineStore({
           .then(data => {
             if (data) {
               setToken(data.data);
-              router.push("/welcome");
+              router.replace("/welcome");
               resolve(data);
             }
           })
@@ -74,7 +74,7 @@ export const useUserStore = defineStore({
       removeToken();
       useMultiTagsStoreHook().handleTags("equal", [...routerArrays]);
       resetRouter();
-      router.push("/login");
+      router.replace("/login");
     },
   }
 });
