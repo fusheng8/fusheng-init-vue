@@ -7,7 +7,8 @@ import { storageLocal } from "@pureadmin/utils";
 import { getLogin, refreshTokenApi } from "@/api/user";
 import type { UserResult, RefreshTokenResult } from "@/api/user";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
-import { type DataInfo, setToken, removeToken, userKey } from "@/utils/auth";
+import {type DataInfo, removeToken, setToken, userKey} from "@/utils/auth";
+import {message} from "@/utils/message";
 
 export const useUserStore = defineStore({
   id: "pure-user",
@@ -50,13 +51,14 @@ export const useUserStore = defineStore({
     SET_LOGINDAY(value: number) {
       this.loginDay = Number(value);
     },
-    /** 登入 */
+    /** 登录 */
     async loginByUsername(data) {
       return new Promise<UserResult>((resolve, reject) => {
         getLogin(data)
           .then(data => {
             if (data) {
               setToken(data.data);
+              router.push("/welcome");
               resolve(data);
             }
           })
@@ -74,21 +76,6 @@ export const useUserStore = defineStore({
       resetRouter();
       router.push("/login");
     },
-    /** 刷新`token` */
-    async handRefreshToken(data) {
-      return new Promise<RefreshTokenResult>((resolve, reject) => {
-        refreshTokenApi(data)
-          .then(data => {
-            if (data) {
-              setToken(data.data);
-              resolve(data);
-            }
-          })
-          .catch(error => {
-            reject(error);
-          });
-      });
-    }
   }
 });
 

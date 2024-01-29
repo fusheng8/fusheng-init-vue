@@ -50,7 +50,7 @@ export default defineFakeRoute([
       if (body.phone) list = list.filter(item => item.phone === body.phone);
       if (body.deptId) list = list.filter(item => item.dept.id === body.deptId);
       return {
-        success: true,
+        code: 200,
         data: {
           list,
           total: list.length, // 总条目数
@@ -66,7 +66,7 @@ export default defineFakeRoute([
     method: "get",
     response: () => {
       return {
-        success: true,
+        code: 200,
         data: [
           { id: 1, name: "超级管理员" },
           { id: 2, name: "普通角色" }
@@ -82,12 +82,12 @@ export default defineFakeRoute([
       if (body.userId) {
         if (body.userId == 1) {
           return {
-            success: true,
+            code: 200,
             data: [1]
           };
         } else if (body.userId == 2) {
           return {
-            success: true,
+            code: 200,
             data: [2]
           };
         }
@@ -130,7 +130,7 @@ export default defineFakeRoute([
       );
       if (body.code) list = list.filter(item => item.code === body.code);
       return {
-        success: true,
+        code: 200,
         data: {
           list,
           total: list.length, // 总条目数
@@ -146,7 +146,7 @@ export default defineFakeRoute([
     method: "post",
     response: () => {
       return {
-        success: true,
+        code: 200,
         data: [
           {
             name: "杭州总公司",

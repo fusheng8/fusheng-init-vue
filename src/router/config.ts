@@ -1,11 +1,9 @@
-// 模拟后端动态生成路由
-import { defineFakeRoute } from "vite-plugin-fake-server/client";
 import { system, permission, frame, tabs } from "@/router/enums";
 
 /**
- * roles：页面级别权限，这里模拟二种 "admin"、"common"
+ * roles：页面级别权限，这里模拟二种 "admin"、"user"
  * admin：管理员角色
- * common：普通角色
+ * user：普通角色
  */
 
 const systemRouter = {
@@ -59,7 +57,7 @@ const permissionRouter = {
       name: "PermissionPage",
       meta: {
         title: "menus.permissionPage",
-        roles: ["admin", "common"]
+        roles: ["admin", "user"]
       }
     },
     {
@@ -67,7 +65,7 @@ const permissionRouter = {
       name: "PermissionButton",
       meta: {
         title: "menus.permissionButton",
-        roles: ["admin", "common"],
+        roles: ["admin", "user"],
         auths: ["btn_add", "btn_edit", "btn_delete"]
       }
     }
@@ -93,7 +91,7 @@ const frameRouter = {
           name: "https://yiming_chang.gitee.io/pure-admin-doc",
           meta: {
             title: "menus.externalLink",
-            roles: ["admin", "common"]
+            roles: ["admin", "user"]
           }
         },
         {
@@ -101,7 +99,7 @@ const frameRouter = {
           name: "https://pure-admin-utils.netlify.app/",
           meta: {
             title: "menus.pureutilsLink",
-            roles: ["admin", "common"]
+            roles: ["admin", "user"]
           }
         }
       ]
@@ -119,7 +117,7 @@ const frameRouter = {
             title: "menus.hsEpDocument",
             frameSrc: "https://element-plus.org/zh-CN/",
             keepAlive: true,
-            roles: ["admin", "common"]
+            roles: ["admin", "user"]
           }
         },
         {
@@ -129,7 +127,7 @@ const frameRouter = {
             title: "menus.hsTailwindcssDocument",
             frameSrc: "https://tailwindcss.com/docs/installation",
             keepAlive: true,
-            roles: ["admin", "common"]
+            roles: ["admin", "user"]
           }
         },
         {
@@ -139,7 +137,7 @@ const frameRouter = {
             title: "menus.hsVueDocument",
             frameSrc: "https://cn.vuejs.org/",
             keepAlive: true,
-            roles: ["admin", "common"]
+            roles: ["admin", "user"]
           }
         },
         {
@@ -149,7 +147,7 @@ const frameRouter = {
             title: "menus.hsViteDocument",
             frameSrc: "https://cn.vitejs.dev/",
             keepAlive: true,
-            roles: ["admin", "common"]
+            roles: ["admin", "user"]
           }
         },
         {
@@ -159,7 +157,7 @@ const frameRouter = {
             title: "menus.hsPiniaDocument",
             frameSrc: "https://pinia.vuejs.org/zh/index.html",
             keepAlive: true,
-            roles: ["admin", "common"]
+            roles: ["admin", "user"]
           }
         },
         {
@@ -169,7 +167,7 @@ const frameRouter = {
             title: "menus.hsRouterDocument",
             frameSrc: "https://router.vuejs.org/zh/",
             keepAlive: true,
-            roles: ["admin", "common"]
+            roles: ["admin", "user"]
           }
         }
       ]
@@ -190,7 +188,7 @@ const tabsRouter = {
       name: "Tabs",
       meta: {
         title: "menus.hstabs",
-        roles: ["admin", "common"]
+        roles: ["admin", "user"]
       }
     },
     // query 传参模式
@@ -201,7 +199,7 @@ const tabsRouter = {
         // 不在menu菜单中显示
         showLink: false,
         activePath: "/tabs/index",
-        roles: ["admin", "common"]
+        roles: ["admin", "user"]
       }
     },
     // params 传参模式
@@ -213,21 +211,12 @@ const tabsRouter = {
         // 不在menu菜单中显示
         showLink: false,
         activePath: "/tabs/index",
-        roles: ["admin", "common"]
+        roles: ["admin", "user"]
       }
     }
   ]
 };
 
-export default defineFakeRoute([
-  {
-    url: "/get-async-routes",
-    method: "get",
-    response: () => {
-      return {
-        code: 200,
-        data: [systemRouter, permissionRouter, frameRouter, tabsRouter]
-      };
-    }
-  }
-]);
+export const getRouter =()=>{
+  return [systemRouter, permissionRouter, frameRouter, tabsRouter];
+}

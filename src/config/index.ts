@@ -33,7 +33,8 @@ export const getPlatformConfig = async (app: App): Promise<undefined> => {
     method: "get",
     url: `${VITE_PUBLIC_PATH}platform-config.json`
   })
-    .then(({ data: config }) => {
+    .then(({ data: res }) => {
+      const config=res.data
       let $config = app.config.globalProperties.$config;
       // 自动注入项目配置
       if (app && $config && typeof config === "object") {
@@ -44,7 +45,8 @@ export const getPlatformConfig = async (app: App): Promise<undefined> => {
       }
       return $config;
     })
-    .catch(() => {
+    .catch((e) => {
+      console.log(e)
       throw "请在public文件夹下添加platform-config.json配置文件";
     });
 };
