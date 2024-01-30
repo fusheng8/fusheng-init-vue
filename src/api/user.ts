@@ -16,11 +16,16 @@ export const getLogin = (data?: object) => {
 };
 
 /** 获取用户信息 */
-export const getUserInfo = (data?: object) => {
-  return http.request<UserResult>("get", "/user/info", { data });
+export const getUserInfo = () => {
+  return http.request<UserResult>("get", "/user/info");
 };
 
 /** 保存或者更新用户 */
 export const save = (data?: object) => {
   return http.request<UserResult>("post", "/user/save", { data });
+};
+
+/** 根据id批量删除用户 */
+export const deleteByIds = (params?: object) => {
+  return http.request<UserResult>("get", "/user/deleteByIds?ids=" + params);
 };

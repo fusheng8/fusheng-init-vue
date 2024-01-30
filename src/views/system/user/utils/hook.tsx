@@ -28,7 +28,7 @@ import {
   reactive,
   onMounted
 } from "vue";
-import { save } from "@/api/user";
+import {deleteByIds, save} from "@/api/user";
 
 export function useUser(tableRef: Ref) {
   const form = reactive({
@@ -200,7 +200,9 @@ export function useUser(tableRef: Ref) {
   }
 
   function handleDelete(row) {
-    message(`您删除了用户编号为${row.id}的这条数据`, { type: "success" });
+    deleteByIds( [row.id]).then(() => {
+      message(`您删除了用户编号为${row.id}的这条数据`, { type: "success" });
+    });
     onSearch();
   }
 
@@ -230,10 +232,13 @@ export function useUser(tableRef: Ref) {
   function onbatchDel() {
     // 返回当前选中的行
     const curSelected = tableRef.value.getTableRef().getSelectionRows();
-    // 接下来根据实际业务，通过选中行的某项数据，比如下面的id，调用接口进行批量删除
-    message(`已删除用户编号为 ${getKeyList(curSelected, "id")} 的数据`, {
-      type: "success"
+    const ids = curSelected.map(item => item.id);
+    deleteByIds(ids).then(() => {
+      message(`已删除用户编号为 ${ids} 的数据`, {
+        type: "success"
+      });
     });
+    // 接下来根据实际业务，通过选中行的某项数据，比如下面的id，调用接口进行批量删除
     tableRef.value.getTableRef().clearSelection();
   }
 
@@ -290,7 +295,6 @@ export function useUser(tableRef: Ref) {
         }
         FormRef.validate(valid => {
           if (valid) {
-            console.log("curData", curData);
             curData.id = row?.id ?? null;
             // 表单规则校验通过
             save(curData).then(() => {
