@@ -9,7 +9,7 @@ import { usePublicHooks } from "../../hooks";
 import { addDialog } from "@/components/ReDialog";
 import type { PaginationProps } from "@pureadmin/table";
 import type { FormItemProps, RoleFormItemProps } from "../utils/types";
-import { hideTextAtIndex, getKeyList, isAllEmpty } from "@pureadmin/utils";
+import { getKeyList, hideTextAtIndex, isAllEmpty } from "@pureadmin/utils";
 import { getRoleIds, getUserList, getAllRoleList } from "@/api/system";
 import {
   ElForm,
@@ -28,7 +28,7 @@ import {
   reactive,
   onMounted
 } from "vue";
-import {deleteByIds, save} from "@/api/user";
+import { deleteByIds, save } from "@/api/user";
 
 export function useUser(tableRef: Ref) {
   const form = reactive({
@@ -232,7 +232,7 @@ export function useUser(tableRef: Ref) {
   function onbatchDel() {
     // 返回当前选中的行
     const curSelected = tableRef.value.getTableRef().getSelectionRows();
-    const ids = curSelected.map(item => item.id);
+    const ids = getKeyList(curSelected, "id");
     deleteByIds(ids).then(() => {
       message(`已删除用户编号为 ${ids} 的数据`, {
         type: "success"
@@ -396,6 +396,7 @@ export function useUser(tableRef: Ref) {
         ruleFormRef.value.validate(valid => {
           if (valid) {
             // 表单规则校验通过
+            save({ id: row.id, password: pwdForm.newPwd });
             message(`已成功重置 ${row.username} 用户的密码`, {
               type: "success"
             });
