@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
-import { formUpload } from "@/api/mock";
+import { uploadFile } from "@/api/mock";
 import { message } from "@/utils/message";
 import { createFormData } from "@pureadmin/utils";
 
@@ -22,7 +22,7 @@ const submitForm = formEl => {
         files: validateForm.fileList.map(file => ({ raw: file.raw })), // file 文件
         date: validateForm.date // 别的字段
       });
-      formUpload(formData)
+      uploadFile(formData)
         .then(({ success }) => {
           if (success) {
             message("提交成功", { type: "success" });

@@ -200,7 +200,7 @@ export function useUser(tableRef: Ref) {
   }
 
   function handleDelete(row) {
-    deleteByIds( [row.id]).then(() => {
+    deleteByIds([row.id]).then(() => {
       message(`您删除了用户编号为${row.id}的这条数据`, { type: "success" });
     });
     onSearch();
@@ -396,11 +396,11 @@ export function useUser(tableRef: Ref) {
         ruleFormRef.value.validate(valid => {
           if (valid) {
             // 表单规则校验通过
-            save({ id: row.id, password: pwdForm.newPwd });
-            message(`已成功重置 ${row.username} 用户的密码`, {
-              type: "success"
+            save({ id: row.id, password: pwdForm.newPwd }).then(() => {
+              message(`已成功重置 ${row.username} 用户的密码`, {
+                type: "success"
+              });
             });
-            console.log(pwdForm.newPwd);
             // 根据实际业务使用pwdForm.newPwd和row里的某些字段去调用重置用户密码接口即可
             done(); // 关闭弹框
             onSearch(); // 刷新表格数据
@@ -431,7 +431,6 @@ export function useUser(tableRef: Ref) {
       contentRenderer: () => h(roleForm),
       beforeSure: (done, { options }) => {
         const curData = options.props.formInline as RoleFormItemProps;
-        console.log("curIds", curData.ids);
         // 根据实际业务使用curData.ids和row里的某些字段去调用修改角色接口即可
         done(); // 关闭弹框
       }

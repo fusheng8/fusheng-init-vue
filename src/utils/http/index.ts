@@ -9,11 +9,11 @@ import type {
   PureHttpResponse,
   PureHttpRequestConfig
 } from "./types.d";
-import {stringify} from "qs";
+import { stringify } from "qs";
 import NProgress from "../progress";
-import {getToken, formatToken} from "@/utils/auth";
-import {useUserStoreHook} from "@/store/modules/user";
-import {message} from "@/utils/message";
+import { getToken, formatToken } from "@/utils/auth";
+import { useUserStoreHook } from "@/store/modules/user";
+import { message } from "@/utils/message";
 
 // 相关配置请参考：www.axios-js.com/zh-cn/docs/#axios-request-config-1
 const defaultConfig: AxiosRequestConfig = {
@@ -36,7 +36,6 @@ class PureHttp {
     this.httpInterceptorsRequest();
     this.httpInterceptorsResponse();
   }
-
 
   /** 初始化配置对象 */
   private static initConfig: PureHttpRequestConfig = {};
@@ -82,15 +81,15 @@ class PureHttp {
           PureHttp.initConfig.beforeResponseCallback(response);
           return response.data;
         }
-        const code= response.data.code;
+        const code = response.data.code;
         // 401代表token过期，需要重新登录
         if (code !== 200) {
           if (code === 401) {
             const userStore = useUserStoreHook();
             userStore.logOut();
             return Promise.reject(response.data);
-          }else {
-            message(response.data.message, {type: 'error'})
+          } else {
+            message(response.data.message, { type: "error" });
             return Promise.reject(response.data);
           }
         }

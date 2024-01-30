@@ -37,6 +37,7 @@ import {
   SearchMinus,
   DownloadIcon
 } from "./svg";
+import { uploadFile } from "@/api/mock";
 
 type Options = Cropper.Options;
 
@@ -232,18 +233,18 @@ export default defineComponent({
         : cropper.value?.[event]?.(arg);
     }
 
-    function beforeUpload(file) {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      inSrc.value = "";
-      reader.onload = e => {
-        inSrc.value = e.target?.result as string;
-      };
-      reader.onloadend = () => {
-        init();
-      };
-      return false;
-    }
+    // function beforeUpload(file) {
+    //   const reader = new FileReader();
+    //   reader.readAsDataURL(file);
+    //   inSrc.value = "";
+    //   reader.onload = e => {
+    //     inSrc.value = e.target?.result as string;
+    //   };
+    //   reader.onloadend = () => {
+    //     init();
+    //   };
+    //   return false;
+    // }
 
     const menuContent = defineComponent({
       directives: {
@@ -254,9 +255,11 @@ export default defineComponent({
         return () => (
           <div class="flex flex-wrap w-[60px] justify-between">
             <ElUpload
+              action={import.meta.env.VITE_APP_FILE_API}
+              with-credentials={true}
+              method="post"
               accept="image/*"
               show-file-list={false}
-              before-upload={beforeUpload}
             >
               <Upload
                 class={iconClass.value}
