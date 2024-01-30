@@ -24,14 +24,14 @@ const options = [
     label: "管理员角色"
   },
   {
-    value: "common",
-    label: "普通角色"
+    value: "user",
+    label: "用户角色"
   }
 ];
 
 function onChange() {
   useUserStoreHook()
-    .loginByUsername({ username: username.value, password: "admin123" })
+    .loginByUsername({ username: username.value, password: "123456" })
     .then(res => {
       if (res.success) {
         storageLocal().removeItem("async-routes");

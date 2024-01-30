@@ -77,6 +77,7 @@ const onLogin = async (formEl: FormInstance | undefined) => {
               .push(getTopMenu(true).path)
               .then(() => {
                 message("登录成功", { type: "success" });
+                router.replace("/welcome");
               })
               .finally(() => (disabled.value = false));
           });

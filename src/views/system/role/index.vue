@@ -52,9 +52,9 @@ const {
           class="!w-[180px]"
         />
       </el-form-item>
-      <el-form-item label="角色标识：" prop="code">
+      <el-form-item label="角色标识：" prop="roleKey">
         <el-input
-          v-model="form.code"
+          v-model="form.roleKey"
           placeholder="请输入角色标识"
           clearable
           class="!w-[180px]"
@@ -86,11 +86,7 @@ const {
       </el-form-item>
     </el-form>
 
-    <PureTableBar
-      title="角色管理（仅演示，操作后不生效）"
-      :columns="columns"
-      @refresh="onSearch"
-    >
+    <PureTableBar title="角色管理" :columns="columns" @refresh="onSearch">
       <template #buttons>
         <el-button
           type="primary"

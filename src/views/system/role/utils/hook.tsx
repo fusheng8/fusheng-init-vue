@@ -12,7 +12,7 @@ import { reactive, ref, onMounted, h, toRaw } from "vue";
 export function useRole() {
   const form = reactive({
     name: "",
-    code: "",
+    roleKey: "",
     status: ""
   });
   const formRef = ref();
@@ -39,7 +39,7 @@ export function useRole() {
     },
     {
       label: "角色标识",
-      prop: "code",
+      prop: "roleKey",
       minWidth: 150
     },
     {
@@ -136,12 +136,12 @@ export function useRole() {
     onSearch();
   }
 
-  function handleSizeChange(val: number) {
-    console.log(`${val} items per page`);
+  function handleSizeChange() {
+    onSearch();
   }
 
-  function handleCurrentChange(val: number) {
-    console.log(`current page: ${val}`);
+  function handleCurrentChange() {
+    onSearch();
   }
 
   function handleSelectionChange(val) {
@@ -150,7 +150,10 @@ export function useRole() {
 
   async function onSearch() {
     loading.value = true;
-    const { data } = await getRoleList(toRaw(form));
+    const { data } = await getRoleList({
+      ...toRaw(form),
+      ...toRaw(pagination)
+    });
     dataList.value = data.list;
     pagination.total = data.total;
     pagination.pageSize = data.pageSize;
@@ -173,7 +176,7 @@ export function useRole() {
       props: {
         formInline: {
           name: row?.name ?? "",
-          code: row?.code ?? "",
+          roleKey: row?.roleKey ?? "",
           remark: row?.remark ?? ""
         }
       },

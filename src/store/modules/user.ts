@@ -4,11 +4,10 @@ import type { userType } from "./types";
 import { routerArrays } from "@/layout/types";
 import { router, resetRouter } from "@/router";
 import { storageLocal } from "@pureadmin/utils";
-import { getLogin, refreshTokenApi } from "@/api/user";
-import type { UserResult, RefreshTokenResult } from "@/api/user";
+import { getLogin } from "@/api/user";
+import type { UserResult } from "@/api/user";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
-import {type DataInfo, removeToken, setToken, userKey} from "@/utils/auth";
-import {message} from "@/utils/message";
+import { type DataInfo, removeToken, setToken, userKey } from "@/utils/auth";
 
 export const useUserStore = defineStore({
   id: "pure-user",
@@ -58,7 +57,6 @@ export const useUserStore = defineStore({
           .then(data => {
             if (data) {
               setToken(data.data);
-              router.replace("/welcome");
               resolve(data);
             }
           })
@@ -75,7 +73,7 @@ export const useUserStore = defineStore({
       useMultiTagsStoreHook().handleTags("equal", [...routerArrays]);
       resetRouter();
       router.replace("/login");
-    },
+    }
   }
 });
 

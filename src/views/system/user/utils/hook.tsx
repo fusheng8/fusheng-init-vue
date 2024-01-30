@@ -3,7 +3,6 @@ import dayjs from "dayjs";
 import roleForm from "../form/role.vue";
 import editForm from "../form/index.vue";
 import { zxcvbn } from "@zxcvbn-ts/core";
-import { handleTree } from "@/utils/tree";
 import { message } from "@/utils/message";
 import croppingUpload from "../upload.vue";
 import { usePublicHooks } from "../../hooks";
@@ -11,12 +10,7 @@ import { addDialog } from "@/components/ReDialog";
 import type { PaginationProps } from "@pureadmin/table";
 import type { FormItemProps, RoleFormItemProps } from "../utils/types";
 import { hideTextAtIndex, getKeyList, isAllEmpty } from "@pureadmin/utils";
-import {
-  getRoleIds,
-  getDeptList,
-  getUserList,
-  getAllRoleList
-} from "@/api/system";
+import { getRoleIds, getUserList, getAllRoleList } from "@/api/system";
 import {
   ElForm,
   ElInput,
@@ -34,14 +28,13 @@ import {
   reactive,
   onMounted
 } from "vue";
+import { save } from "@/api/user";
 
-export function useUser(tableRef: Ref, treeRef: Ref) {
+export function useUser(tableRef: Ref) {
   const form = reactive({
-    // 左侧部门树的id
-    deptId: "",
     username: "",
     phone: "",
-    status: ""
+    userStatus: ""
   });
   const formRef = ref();
   const ruleFormRef = ref();
@@ -51,7 +44,6 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
   const avatarInfo = ref();
   const switchLoadMap = ref({});
   const { switchStyle } = usePublicHooks();
-  const higherDeptOptions = ref();
   const treeData = ref([]);
   const treeLoading = ref(true);
   const selectedNum = ref(0);
@@ -94,27 +86,8 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
     },
     {
       label: "用户昵称",
-      prop: "nickname",
+      prop: "nickName",
       minWidth: 130
-    },
-    {
-      label: "性别",
-      prop: "sex",
-      minWidth: 90,
-      cellRenderer: ({ row, props }) => (
-        <el-tag
-          size={props.size}
-          type={row.sex === 1 ? "danger" : ""}
-          effect="plain"
-        >
-          {row.sex === 1 ? "女" : "男"}
-        </el-tag>
-      )
-    },
-    {
-      label: "部门",
-      prop: "dept.name",
-      minWidth: 90
     },
     {
       label: "手机号码",
@@ -124,13 +97,13 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
     },
     {
       label: "状态",
-      prop: "status",
+      prop: "userStatus",
       minWidth: 90,
       cellRenderer: scope => (
         <el-switch
           size={scope.props.size === "small" ? "small" : "default"}
           loading={switchLoadMap.value[scope.index]?.loading}
-          v-model={scope.row.status}
+          v-model={scope.row.userStatus}
           active-value={1}
           inactive-value={0}
           active-text="已启用"
@@ -180,9 +153,10 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
   const roleOptions = ref([]);
 
   function onChange({ row, index }) {
+    console.log("onChange called:", row, index);
     ElMessageBox.confirm(
       `确认要<strong>${
-        row.status === 0 ? "停用" : "启用"
+        row.userStatus === 0 ? "停用" : "启用"
       }</strong><strong style='color:var(--el-color-primary)'>${
         row.username
       }</strong>用户吗?`,
@@ -217,7 +191,7 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
         }, 300);
       })
       .catch(() => {
-        row.status === 0 ? (row.status = 1) : (row.status = 0);
+        row.userStatus === 0 ? (row.userStatus = 1) : (row.userStatus = 0);
       });
   }
 
@@ -230,12 +204,12 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
     onSearch();
   }
 
-  function handleSizeChange(val: number) {
-    console.log(`${val} items per page`);
+  function handleSizeChange() {
+    onSearch();
   }
 
-  function handleCurrentChange(val: number) {
-    console.log(`current page: ${val}`);
+  function handleCurrentChange() {
+    onSearch();
   }
 
   /** 当CheckBox选择项发生变化时会触发该事件 */
@@ -265,7 +239,10 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
 
   async function onSearch() {
     loading.value = true;
-    const { data } = await getUserList(toRaw(form));
+    const { data } = await getUserList({
+      ...toRaw(form),
+      ...toRaw(pagination)
+    });
     dataList.value = data.list;
     pagination.total = data.total;
     pagination.pageSize = data.pageSize;
@@ -279,27 +256,8 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
   const resetForm = formEl => {
     if (!formEl) return;
     formEl.resetFields();
-    form.deptId = "";
-    treeRef.value.onTreeReset();
     onSearch();
   };
-
-  function onTreeSelect({ id, selected }) {
-    form.deptId = selected ? id : "";
-    onSearch();
-  }
-
-  function formatHigherDeptOptions(treeList) {
-    // 根据返回数据的status字段值判断追加是否禁用disabled字段，返回处理后的树结构，用于上级部门级联选择器的展示（实际开发中也是如此，不可能前端需要的每个字段后端都会返回，这时需要前端自行根据后端返回的某些字段做逻辑处理）
-    if (!treeList || !treeList.length) return;
-    const newTreeList = [];
-    for (let i = 0; i < treeList.length; i++) {
-      treeList[i].disabled = treeList[i].status === 0 ? true : false;
-      formatHigherDeptOptions(treeList[i].children);
-      newTreeList.push(treeList[i]);
-    }
-    return newTreeList;
-  }
 
   function openDialog(title = "新增", row?: FormItemProps) {
     addDialog({
@@ -307,16 +265,12 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
       props: {
         formInline: {
           title,
-          higherDeptOptions: formatHigherDeptOptions(higherDeptOptions.value),
-          parentId: row?.dept.id ?? 0,
-          nickname: row?.nickname ?? "",
+          nickName: row?.nickName ?? "",
           username: row?.username ?? "",
           password: row?.password ?? "",
           phone: row?.phone ?? "",
           email: row?.email ?? "",
-          sex: row?.sex ?? "",
-          status: row?.status ?? 1,
-          remark: row?.remark ?? ""
+          userStatus: row?.userStatus ?? 1
         }
       },
       width: "46%",
@@ -337,14 +291,11 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
         FormRef.validate(valid => {
           if (valid) {
             console.log("curData", curData);
+            curData.id = row?.id ?? null;
             // 表单规则校验通过
-            if (title === "新增") {
-              // 实际开发先调用新增接口，再进行下面操作
+            save(curData).then(() => {
               chores();
-            } else {
-              // 实际开发先调用修改接口，再进行下面操作
-              chores();
-            }
+            });
           }
         });
       }
@@ -463,7 +414,7 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
       props: {
         formInline: {
           username: row?.username ?? "",
-          nickname: row?.nickname ?? "",
+          nickName: row?.nickName ?? "",
           roleOptions: roleOptions.value ?? [],
           ids
         }
@@ -483,15 +434,7 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
   }
 
   onMounted(async () => {
-    treeLoading.value = true;
     onSearch();
-
-    // 归属部门
-    const { data } = await getDeptList();
-    higherDeptOptions.value = handleTree(data);
-    treeData.value = handleTree(data);
-    treeLoading.value = false;
-
     // 角色列表
     roleOptions.value = (await getAllRoleList()).data;
   });
@@ -510,7 +453,6 @@ export function useUser(tableRef: Ref, treeRef: Ref) {
     resetForm,
     onbatchDel,
     openDialog,
-    onTreeSelect,
     handleUpdate,
     handleDelete,
     handleUpload,

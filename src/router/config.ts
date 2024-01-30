@@ -31,15 +31,6 @@ const systemRouter = {
         title: "menus.hsRole",
         roles: ["admin"]
       }
-    },
-    {
-      path: "/system/dept/index",
-      name: "SystemDept",
-      meta: {
-        icon: "dept",
-        title: "menus.hsDept",
-        roles: ["admin"]
-      }
     }
   ]
 };

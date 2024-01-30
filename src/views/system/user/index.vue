@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import tree from "./tree.vue";
 import { useUser } from "./utils/hook";
 import { PureTableBar } from "@/components/RePureTableBar";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
@@ -18,7 +17,6 @@ defineOptions({
   name: "SystemUser"
 });
 
-const treeRef = ref();
 const formRef = ref();
 const tableRef = ref();
 
@@ -27,8 +25,6 @@ const {
   loading,
   columns,
   dataList,
-  treeData,
-  treeLoading,
   selectedNum,
   pagination,
   buttonClass,
@@ -36,7 +32,6 @@ const {
   resetForm,
   onbatchDel,
   openDialog,
-  onTreeSelect,
   handleUpdate,
   handleDelete,
   handleUpload,
@@ -46,18 +41,11 @@ const {
   onSelectionCancel,
   handleCurrentChange,
   handleSelectionChange
-} = useUser(tableRef, treeRef);
+} = useUser(tableRef);
 </script>
 
 <template>
   <div class="flex justify-between">
-    <tree
-      ref="treeRef"
-      class="min-w-[200px] mr-2"
-      :treeData="treeData"
-      :treeLoading="treeLoading"
-      @tree-select="onTreeSelect"
-    />
     <div class="w-[calc(100%-200px)]">
       <el-form
         ref="formRef"
@@ -81,9 +69,9 @@ const {
             class="!w-[180px]"
           />
         </el-form-item>
-        <el-form-item label="状态：" prop="status">
+        <el-form-item label="状态：" prop="userStatus">
           <el-select
-            v-model="form.status"
+            v-model="form.userStatus"
             placeholder="请选择"
             clearable
             class="!w-[180px]"
@@ -108,7 +96,7 @@ const {
       </el-form>
 
       <PureTableBar
-        title="用户管理（仅演示，操作后不生效）"
+        title="用户管理"
         :columns="columns"
         @refresh="onSearch"
       >
@@ -157,7 +145,7 @@ const {
             :data="dataList"
             :columns="dynamicColumns"
             :pagination="pagination"
-            :paginationSmall="size === 'small' ? true : false"
+            :paginationSmall="size === 'small'"
             :header-cell-style="{
               background: 'var(--el-fill-color-light)',
               color: 'var(--el-text-color-primary)'

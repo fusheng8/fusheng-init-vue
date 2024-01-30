@@ -21,12 +21,12 @@ type ResultTable = {
 
 /** 获取用户管理列表 */
 export const getUserList = (data?: object) => {
-  return http.request<ResultTable>("post", "/user", { data });
+  return http.request<ResultTable>("post", "/user/list", { data });
 };
 
 /** 用户管理-获取所有角色列表 */
 export const getAllRoleList = () => {
-  return http.request<Result>("get", "/list-all-role");
+  return http.request<Result>("get", "/role/list-all-role");
 };
 
 /** 用户管理-根据userId，获取对应角色id列表（userId：用户id） */
@@ -36,10 +36,6 @@ export const getRoleIds = (data?: object) => {
 
 /** 获取角色管理列表 */
 export const getRoleList = (data?: object) => {
-  return http.request<ResultTable>("post", "/role", { data });
+  return http.request<ResultTable>("post", "/role/list", { data });
 };
 
-/** 获取部门管理列表 */
-export const getDeptList = (data?: object) => {
-  return http.request<Result>("post", "/dept", { data });
-};
