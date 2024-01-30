@@ -154,7 +154,6 @@ export function useUser(tableRef: Ref) {
   const roleOptions = ref([]);
 
   function onChange({ row, index }) {
-    console.log("onChange called:", row, index);
     ElMessageBox.confirm(
       `确认要<strong>${
         row.userStatus === 0 ? "停用" : "启用"
@@ -171,25 +170,27 @@ export function useUser(tableRef: Ref) {
       }
     )
       .then(() => {
-        switchLoadMap.value[index] = Object.assign(
-          {},
-          switchLoadMap.value[index],
-          {
-            loading: true
-          }
-        );
-        setTimeout(() => {
+        save({ id: row.id, userStatus: row.userStatus }).then(() => {
           switchLoadMap.value[index] = Object.assign(
             {},
             switchLoadMap.value[index],
             {
-              loading: false
+              loading: true
             }
           );
-          message("已成功修改用户状态", {
-            type: "success"
-          });
-        }, 300);
+          setTimeout(() => {
+            switchLoadMap.value[index] = Object.assign(
+              {},
+              switchLoadMap.value[index],
+              {
+                loading: false
+              }
+            );
+            message("已成功修改用户状态", {
+              type: "success"
+            });
+          }, 300);
+        });
       })
       .catch(() => {
         row.userStatus === 0 ? (row.userStatus = 1) : (row.userStatus = 0);
