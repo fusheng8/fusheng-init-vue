@@ -29,6 +29,7 @@ import {
   onMounted
 } from "vue";
 import { deleteByIds, save } from "@/api/user";
+import { uploadFile } from "@/api/file";
 
 export function useUser(tableRef: Ref) {
   const form = reactive({
@@ -321,10 +322,18 @@ export function useUser(tableRef: Ref) {
           onCropper: info => (avatarInfo.value = info)
         }),
       beforeSure: done => {
-        console.log("裁剪后的图片信息：", avatarInfo.value);
         // 根据实际业务使用avatarInfo.value和row里的某些字段去调用上传头像接口即可
-        done(); // 关闭弹框
-        onSearch(); // 刷新表格数据
+        const formData = new FormData();
+        formData.append("file", avatarInfo.value.blob, "file.png"); // 'filename.bin' 是上传到服务器的文件名
+        uploadFile(formData).then(res => {
+          save({ id: row.id, avatar: res.data }).then(() => {
+            message(`已成功修改 ${row.username} 用户的头像`, {
+              type: "success"
+            });
+            done(); // 关闭弹框
+            onSearch(); // 刷新表格数据
+          });
+        });
       },
       closeCallBack: () => cropRef.value.hidePopover()
     });
