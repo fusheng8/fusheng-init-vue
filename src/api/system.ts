@@ -26,16 +26,15 @@ export const getUserList = (data?: object) => {
 
 /** 用户管理-获取所有角色列表 */
 export const getAllRoleList = () => {
-  return http.request<Result>("get", "/role/list-all-role");
+  return http.request<Result>("get", "/role/getAllList");
 };
 
 /** 用户管理-根据userId，获取对应角色id列表（userId：用户id） */
-export const getRoleIds = (data?: object) => {
-  return http.request<Result>("post", "/list-role-ids", { data });
+export const getRoleIds = (params?: object) => {
+  return http.request<Result>("get", "/user/getRoleIdsByUserId", { params });
 };
 
 /** 获取角色管理列表 */
 export const getRoleList = (data?: object) => {
-  return http.request<ResultTable>("post", "/role/list", { data });
+  return http.request<ResultTable>("get", "/role/list", { data });
 };
-

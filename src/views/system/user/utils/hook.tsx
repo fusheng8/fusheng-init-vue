@@ -28,7 +28,7 @@ import {
   reactive,
   onMounted
 } from "vue";
-import { deleteByIds, save } from "@/api/user";
+import { deleteByIds, saveUser, setUserRole } from "@/api/user";
 import { uploadFile } from "@/api/file";
 
 export function useUser(tableRef: Ref) {
@@ -170,7 +170,7 @@ export function useUser(tableRef: Ref) {
       }
     )
       .then(() => {
-        save({ id: row.id, userStatus: row.userStatus }).then(() => {
+        saveUser({ id: row.id, userStatus: row.userStatus }).then(() => {
           switchLoadMap.value[index] = Object.assign(
             {},
             switchLoadMap.value[index],
@@ -299,7 +299,7 @@ export function useUser(tableRef: Ref) {
           if (valid) {
             curData.id = row?.id ?? null;
             // 表单规则校验通过
-            save(curData).then(() => {
+            saveUser(curData).then(() => {
               chores();
             });
           }
@@ -327,7 +327,7 @@ export function useUser(tableRef: Ref) {
         const formData = new FormData();
         formData.append("file", avatarInfo.value.blob, "file.png"); // 'filename.bin' 是上传到服务器的文件名
         uploadFile(formData).then(res => {
-          save({ id: row.id, avatar: res.data }).then(() => {
+          saveUser({ id: row.id, avatar: res.data }).then(() => {
             message(`已成功修改 ${row.username} 用户的头像`, {
               type: "success"
             });
@@ -406,7 +406,7 @@ export function useUser(tableRef: Ref) {
         ruleFormRef.value.validate(valid => {
           if (valid) {
             // 表单规则校验通过
-            save({ id: row.id, password: pwdForm.newPwd }).then(() => {
+            saveUser({ id: row.id, password: pwdForm.newPwd }).then(() => {
               message(`已成功重置 ${row.username} 用户的密码`, {
                 type: "success"
               });
@@ -423,7 +423,7 @@ export function useUser(tableRef: Ref) {
   /** 分配角色 */
   async function handleRole(row) {
     // 选中的角色列表
-    const ids = (await getRoleIds({ userId: row.id })).data ?? [];
+    const ids = JSON.parse((await getRoleIds({ userId: row.id })).data) ?? [];
     addDialog({
       title: `分配 ${row.username} 用户的角色`,
       props: {
@@ -441,8 +441,12 @@ export function useUser(tableRef: Ref) {
       contentRenderer: () => h(roleForm),
       beforeSure: (done, { options }) => {
         const curData = options.props.formInline as RoleFormItemProps;
-        // 根据实际业务使用curData.ids和row里的某些字段去调用修改角色接口即可
-        done(); // 关闭弹框
+        setUserRole({ userId: row.id, roleIds: curData.ids }).then(() => {
+          message(`已成功分配 ${row.username} 用户的角色`, {
+            type: "success"
+          });
+          done(); // 关闭弹框
+        });
       }
     });
   }
