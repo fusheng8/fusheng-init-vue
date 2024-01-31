@@ -2,12 +2,7 @@ import { http } from "@/utils/http";
 
 export type UserResult = {
   success: boolean;
-  data: {
-    /** 用户名 */
-    username: string;
-    /** 当前登陆用户的角色 */
-    roles: Array<string>;
-  };
+  data: any;
 };
 
 /** 登录 */
@@ -26,11 +21,19 @@ export const saveUser = (data?: object) => {
 };
 
 /** 根据id批量删除用户 */
-export const deleteByIds = (params?: object) => {
+export const deleteUserByIds = (params?: object) => {
   return http.request<UserResult>("get", "/user/deleteByIds?ids=" + params);
 };
 
 /** 设置用户角色 */
 export const setUserRole = (data?: object) => {
   return http.request<UserResult>("post", "/user/setUserRole", { data });
+};
+/** 获取用户管理列表 */
+export const getUserList = (data?: object) => {
+  return http.request<UserResult>("post", "/user/list", {data});
+};
+/** 用户管理-根据userId，获取对应角色id列表（userId：用户id） */
+export const getRoleIdsByUserId = (params?: object) => {
+  return http.request<UserResult>("get", "/user/getRoleIdsByUserId", {params});
 };

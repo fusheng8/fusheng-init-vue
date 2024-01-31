@@ -10,7 +10,7 @@ import { addDialog } from "@/components/ReDialog";
 import type { PaginationProps } from "@pureadmin/table";
 import type { FormItemProps, RoleFormItemProps } from "../utils/types";
 import { getKeyList, hideTextAtIndex, isAllEmpty } from "@pureadmin/utils";
-import { getRoleIds, getUserList, getAllRoleList } from "@/api/system";
+import { getAllRoleList } from "@/api/role";
 import {
   ElForm,
   ElInput,
@@ -28,7 +28,7 @@ import {
   reactive,
   onMounted
 } from "vue";
-import { deleteByIds, saveUser, setUserRole } from "@/api/user";
+import {deleteUserByIds, getRoleIdsByUserId, getUserList, saveUser, setUserRole} from "@/api/user";
 import { uploadFile } from "@/api/file";
 
 export function useUser(tableRef: Ref) {
@@ -202,7 +202,7 @@ export function useUser(tableRef: Ref) {
   }
 
   function handleDelete(row) {
-    deleteByIds([row.id]).then(() => {
+    deleteUserByIds([row.id]).then(() => {
       message(`您删除了用户编号为${row.id}的这条数据`, { type: "success" });
     });
     onSearch();
@@ -235,7 +235,7 @@ export function useUser(tableRef: Ref) {
     // 返回当前选中的行
     const curSelected = tableRef.value.getTableRef().getSelectionRows();
     const ids = getKeyList(curSelected, "id");
-    deleteByIds(ids).then(() => {
+    deleteUserByIds(ids).then(() => {
       message(`已删除用户编号为 ${ids} 的数据`, {
         type: "success"
       });
@@ -423,7 +423,7 @@ export function useUser(tableRef: Ref) {
   /** 分配角色 */
   async function handleRole(row) {
     // 选中的角色列表
-    const ids = JSON.parse((await getRoleIds({ userId: row.id })).data) ?? [];
+    const ids = JSON.parse((await getRoleIdsByUserId({ userId: row.id })).data) ?? [];
     addDialog({
       title: `分配 ${row.username} 用户的角色`,
       props: {

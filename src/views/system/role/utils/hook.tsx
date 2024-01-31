@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import editForm from "../form.vue";
 import { message } from "@/utils/message";
-import { getRoleList } from "@/api/system";
+import { deleteRoleByIds, getPageRoleList, saveRole } from "@/api/role";
 import { ElMessageBox } from "element-plus";
 import { usePublicHooks } from "../../hooks";
 import { addDialog } from "@/components/ReDialog";
@@ -106,25 +106,30 @@ export function useRole() {
       }
     )
       .then(() => {
-        switchLoadMap.value[index] = Object.assign(
-          {},
-          switchLoadMap.value[index],
-          {
-            loading: true
-          }
-        );
-        setTimeout(() => {
+        saveRole({
+          id: row.id,
+          status: row.status === 1 ? 1 : 0
+        }).then(() => {
           switchLoadMap.value[index] = Object.assign(
             {},
             switchLoadMap.value[index],
             {
-              loading: false
+              loading: true
             }
           );
-          message(`已${row.status === 0 ? "停用" : "启用"}${row.name}`, {
-            type: "success"
-          });
-        }, 300);
+          setTimeout(() => {
+            switchLoadMap.value[index] = Object.assign(
+              {},
+              switchLoadMap.value[index],
+              {
+                loading: false
+              }
+            );
+            message(`已${row.status === 0 ? "停用" : "启用"}${row.name}`, {
+              type: "success"
+            });
+          }, 300);
+        });
       })
       .catch(() => {
         row.status === 0 ? (row.status = 1) : (row.status = 0);
@@ -132,8 +137,10 @@ export function useRole() {
   }
 
   function handleDelete(row) {
-    message(`您删除了角色名称为${row.name}的这条数据`, { type: "success" });
-    onSearch();
+    deleteRoleByIds([row.id]).then(() => {
+      message(`您删除了角色名称为${row.name}的这条数据`, { type: "success" });
+      onSearch();
+    });
   }
 
   function handleSizeChange() {
@@ -150,7 +157,7 @@ export function useRole() {
 
   async function onSearch() {
     loading.value = true;
-    const { data } = await getRoleList({
+    const { data } = await getPageRoleList({
       ...toRaw(form),
       ...toRaw(pagination)
     });
@@ -198,14 +205,10 @@ export function useRole() {
         FormRef.validate(valid => {
           if (valid) {
             console.log("curData", curData);
-            // 表单规则校验通过
-            if (title === "新增") {
-              // 实际开发先调用新增接口，再进行下面操作
+            curData.id = row?.id;
+            saveRole(curData).then(() => {
               chores();
-            } else {
-              // 实际开发先调用修改接口，再进行下面操作
-              chores();
-            }
+            });
           }
         });
       }
