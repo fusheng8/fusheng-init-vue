@@ -11,7 +11,6 @@ import type {
 } from "./types.d";
 import { stringify } from "qs";
 import NProgress from "../progress";
-import { getToken, formatToken } from "@/utils/auth";
 import { useUserStoreHook } from "@/store/modules/user";
 import { message } from "@/utils/message";
 
@@ -20,6 +19,7 @@ const defaultConfig: AxiosRequestConfig = {
   // 请求超时时间
   baseURL: import.meta.env.VITE_APP_BASE_API,
   timeout: 10000,
+  withCredentials: true,
   headers: {
     Accept: "application/json, text/plain, */*",
     "Content-Type": "application/json",

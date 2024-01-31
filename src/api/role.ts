@@ -27,5 +27,5 @@ export const saveRole = (data?: object) => {
 
 /** 根据id批量删除角色 */
 export const deleteRoleByIds = (params?: object) => {
-  return http.request<Result>("get", "/user/deleteByIds?ids=" + params);
+  return http.request<Result>("get", "/role/deleteByIds?ids=" + params);
 };
