@@ -59,6 +59,7 @@ declare module 'vue' {
     ATextarea: typeof import('ant-design-vue/es')['Textarea']
     ATooltip: typeof import('ant-design-vue/es')['Tooltip']
     ATypographyText: typeof import('ant-design-vue/es')['TypographyText']
+    AUpload: typeof import('ant-design-vue/es')['Upload']
     AWatermark: typeof import('ant-design-vue/es')['Watermark']
     BaseLoading: typeof import('./../src/components/base-loading/index.vue')['default']
     CarbonLanguage: typeof import('./../src/components/icons/carbon-language.vue')['default']

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons-vue'
-import CrudTableModal from './components/crud-table-modal.vue'
+import CrudTableModal from './components/userAddOrUpdateForm.vue'
 import type { CrudTableModel } from '~@/api/list/crud-table'
-import { deleteApi } from '~@/api/list/crud-table'
 import { useTableQuery } from '~@/composables/table-query'
-import { getUserPageList } from '~/api/common/user'
+import { deleteUserByIds, getUserPageList } from '~/api/common/user'
 import { getAllRoleList } from '~/api/common/role.ts'
 
 const message = useMessage()
-const roleObj = ref({})
+const roleArr: any = ref([])
+const roleObj: any = ref({})
 
 const columns = shallowRef([
   {
@@ -57,34 +57,29 @@ const crudTableModal = ref<InstanceType<typeof CrudTableModal>>()
 
 onMounted(async () => {
   const { data } = await getAllRoleList()
-  data.forEach((item) => {
+  roleArr.value = data
+  data?.forEach((item) => {
     roleObj.value[item.id] = item.name
   })
 })
 
-async function handleDelete(record: CrudTableModel) {
-  if (!record.id)
-    return message.error('id 不能为空')
-  try {
-    const res = await deleteApi(record.id)
-    if (res.code === 200)
-      await query()
-    message.success('删除成功')
-  }
-  catch (e) {
-    console.log(e)
-  }
-  finally {
-    close()
-  }
+async function handleDelete(record: CrudTableModel[]) {
+  // 解构出id数组
+  const ids = record.map(item => item.id)
+  console.log(typeof ids, ids)
+  await deleteUserByIds([...ids])
+  await query()
+  message.success('删除成功')
+
+  close()
 }
 
 function handleAdd() {
-  crudTableModal.value?.open()
+  crudTableModal.value?.open({}, roleArr.value)
 }
 
 function handleEdit(record: CrudTableModel) {
-  crudTableModal.value?.open(record)
+  crudTableModal.value?.open(record, roleArr.value)
 }
 </script>
 
@@ -115,7 +110,10 @@ function handleEdit(record: CrudTableModel) {
     <a-card title="用户管理">
       <template #extra>
         <a-space size="middle">
-          <a-button type="primary" danger :disabled="!state.rowSelections.selectedRows.length > 0" @click="handleDelete">
+          <a-button
+            type="primary" danger :disabled="!state.rowSelections.selectedRows.length > 0"
+            @click="handleDelete(state.rowSelections.selectedRows)"
+          >
             <template #icon>
               <DeleteOutlined />
             </template>
@@ -159,7 +157,7 @@ function handleEdit(record: CrudTableModel) {
               </a-button>
               <a-popconfirm
                 title="确定删除该条数据？" ok-text="确定" cancel-text="取消"
-                @confirm="handleDelete(scope?.record as CrudTableModel)"
+                @confirm="handleDelete([scope?.record as CrudTableModel])"
               >
                 <a-button type="link">
                   删除
@@ -171,7 +169,7 @@ function handleEdit(record: CrudTableModel) {
       </a-table>
     </a-card>
 
-    <CrudTableModal ref="crudTableModal" />
+    <CrudTableModal ref="crudTableModal" @ok="query" />
   </page-container>
 </template>
 

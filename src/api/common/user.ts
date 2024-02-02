@@ -12,3 +12,10 @@ export function getUserInfoApi() {
 export async function getUserPageList(params?: any) {
   return usePost<UserInfo[]>('/user/list', params)
 }
+export async function deleteUserByIds(params?: any) {
+  return useGet(`/user/deleteByIds?ids=${params.join(',')}`)
+}
+
+export async function addOrUpdate(params?: any) {
+  return usePost('/user/save', params)
+}
