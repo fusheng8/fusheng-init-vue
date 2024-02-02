@@ -430,4 +430,23 @@ export default [
       },
     ],
   },
+  {
+    path: '/system',
+    redirect: '/system',
+    name: 'System',
+    meta: {
+      title: '系统管理',
+      icon: 'SettingOutlined',
+    },
+    children: [
+      {
+        path: '/system/user',
+        name: 'UserManage',
+        component: () => import('~/pages/system/user-manage.vue'),
+        meta: {
+          title: '用户管理',
+        },
+      },
+    ],
+  },
 ] as RouteRecordRaw[]

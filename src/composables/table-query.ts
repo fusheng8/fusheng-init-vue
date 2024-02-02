@@ -114,7 +114,7 @@ export function useTableQuery(_options: Partial<TableQueryOptions>) {
         column: 'createTime',
         showSizeChanger: true,
         showQuickJumper: true,
-        showTotal: total => `总数据位：${total}`,
+        showTotal: total => `数据总数：${total}`,
         onChange(current, pageSize) {
           state.pagination!.pageSize = pageSize
           state.pagination!.current = current
@@ -149,7 +149,7 @@ export function useTableQuery(_options: Partial<TableQueryOptions>) {
       })
       if (data) {
         const _data = await state.afterQuery(data)
-        state.dataSource = _data.records ?? []
+        state.dataSource = _data.list ?? []
         state.pagination.total = _data.total ?? 0
       }
     }

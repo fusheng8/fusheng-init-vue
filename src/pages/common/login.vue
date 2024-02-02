@@ -15,8 +15,8 @@ const { layoutSetting } = storeToRefs(appStore)
 const router = useRouter()
 const token = useAuthorization()
 const loginModel = reactive({
-  username: undefined,
-  password: undefined,
+  username: 'admin',
+  password: '123456',
   mobile: undefined,
   code: undefined,
   type: 'account',

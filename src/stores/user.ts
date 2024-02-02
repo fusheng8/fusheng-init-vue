@@ -2,6 +2,7 @@ import { logoutApi } from '~@/api/common/login'
 import { getRouteMenusApi } from '~@/api/common/menu'
 import type { UserInfo } from '~@/api/common/user'
 import { getUserInfoApi } from '~@/api/common/user'
+
 import type { MenuData } from '~@/layouts/basic-layout/typing'
 import { rootRoute } from '~@/router/constant'
 import { generateFlatRoutes, generateRoutes, generateTreeRoutes } from '~@/router/generate-route'
@@ -13,7 +14,7 @@ export const useUserStore = defineStore('user', () => {
   const userInfo = shallowRef<UserInfo>()
   const token = useAuthorization()
   const avatar = computed(() => userInfo.value?.avatar)
-  const nickname = computed(() => userInfo.value?.nickname ?? userInfo.value?.username)
+  const nickname = computed(() => userInfo.value?.nickName ?? userInfo.value?.username)
   const roles = computed(() => userInfo.value?.roles)
 
   const getMenuRoutes = async () => {
@@ -37,8 +38,8 @@ export const useUserStore = defineStore('user', () => {
   // 获取用户信息
   const getUserInfo = async () => {
     // 获取用户信息
-    const { data } = await getUserInfoApi()
-    userInfo.value = data
+    const { data: userData } = await getUserInfoApi()
+    userInfo.value = userData
   }
 
   const logout = async () => {

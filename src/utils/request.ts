@@ -55,11 +55,6 @@ function responseHandler(response: any): ResponseBody<any> | AxiosResponse<any> 
     return response.data
   }
   else if (code === 40100) {
-    notification?.error({
-      message: '401',
-      description: data?.msg || '未登录',
-      duration: 3,
-    })
     /**
      * 这里处理清空用户信息和token的逻辑，后续扩展
      */
@@ -73,6 +68,11 @@ function responseHandler(response: any): ResponseBody<any> | AxiosResponse<any> 
       })
       .then(() => {})
   }
+  notification?.error({
+    message: '错误',
+    description: data?.msg || '系统错误',
+    duration: 3,
+  })
   return Promise.reject(response.data)
 }
 
